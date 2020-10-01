@@ -1,0 +1,99 @@
+---
+- hosts: localhost
+  name: Add Hosts and licenses to vCenter 
+  gather_facts: false
+  vars_files: ../answerfile.yml
+
+  tasks:
+    
+
+    - name: Add ESXi Host to vCenter - EDGE 
+      vmware_host:
+        validate_certs: no
+        hostname: '{{ vcenter_hostname }}.{{ domain }}'
+        username: '{{ vcenter_username }}'
+        password: '{{ vcenter_password }}'
+        datacenter_name: '{{ datacenter_name }}'
+        cluster: '{{ cluster_name_edge }}'
+        esxi_hostname: '{{ esxi_infrastructure_fqdn }}'
+        esxi_username: '{{ esxi_username }}'
+        esxi_password: '{{ esxi_password }}'
+        state: present
+      delegate_to: localhost
+
+
+    - name: Add ESXi Host to vCenter - COMPUTE 01 
+      vmware_host:
+        validate_certs: no
+        hostname: '{{ vcenter_hostname }}.{{ domain }}'
+        username: '{{ vcenter_username }}'
+        password: '{{ vcenter_password }}'
+        datacenter_name: '{{ datacenter_name }}'
+        cluster: '{{ cluster_name_compute }}'
+        esxi_hostname: '{{ esxi_compute_01_fqdn }}'
+        esxi_username: '{{ esxi_username }}'
+        esxi_password: '{{ esxi_password }}'
+        state: present
+      delegate_to: localhost
+
+
+    - name: Add ESXi Host to vCenter - COMPUTE 02
+      vmware_host:
+        validate_certs: no
+        hostname: '{{ vcenter_hostname }}.{{ domain }}'
+        username: '{{ vcenter_username }}'
+        password: '{{ vcenter_password }}'
+        datacenter_name: '{{ datacenter_name }}'
+        cluster: '{{ cluster_name_compute }}'
+        esxi_hostname: '{{ esxi_compute_02_fqdn }}'
+        esxi_username: '{{ esxi_username }}'
+        esxi_password: '{{ esxi_password }}'
+        state: present
+      delegate_to: localhost
+
+
+    - name: Add a new vCenter license - vCenter
+      vcenter_license:
+        validate_certs: no
+        hostname: '{{ vcenter_hostname }}.{{ domain }}'
+        username: '{{ vcenter_username }}'
+        password: '{{ vcenter_password }}'
+        license: '{{ vcenter7_license }}'
+        state: present
+      delegate_to: localhost
+
+    - name: Add ESXi license and assign to the ESXi host - EDGE 
+      vcenter_license:
+        validate_certs: no
+        hostname: '{{ vcenter_hostname }}.{{ domain }}'
+        username: '{{ vcenter_username }}'
+        password: '{{ vcenter_password }}'
+        esxi_hostname: '{{ esxi_infrastructure_fqdn }}'
+        license: '{{ vsphere7_license }}'
+        state: present
+      delegate_to: localhost
+
+
+    - name: Add ESXi license and assign to the ESXi host - COMPUTE 01
+      vcenter_license:
+        validate_certs: no
+        hostname: '{{ vcenter_hostname }}.{{ domain }}'
+        username: '{{ vcenter_username }}'
+        password: '{{ vcenter_password }}'
+        esxi_hostname: '{{ esxi_compute_01_fqdn }}'
+        license: '{{ vsphere7_license }}'
+        state: present
+      delegate_to: localhost
+
+
+    - name: Add ESXi license and assign to the ESXi host - COMPUTE 02
+      vcenter_license:
+        validate_certs: no
+        hostname: '{{ vcenter_hostname }}.{{ domain }}'
+        username: '{{ vcenter_username }}'
+        password: '{{ vcenter_password }}'
+        esxi_hostname: '{{ esxi_compute_02_fqdn }}'
+        license: '{{ vsphere7_license }}'
+        state: present
+      delegate_to: localhost
+

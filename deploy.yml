@@ -1,0 +1,33 @@
+---
+- hosts: localhost
+  name: Lab Deployment
+  gather_facts: false
+  vars_prompt:
+    - name: "esxi_password"
+      prompt: "What is the ESXi Password? "
+      private: yes
+    - name: "vcenter_password"
+      prompt: "What is the vCenter Password? "
+      private: yes
+    - name: "vcenter7_license"
+      prompt: "What is the License for vCenter? "
+      private: yes      
+    - name: "vsphere7_license"
+      prompt: "What is the License for vSphere7? "
+      private: yes
+  vars_files: answerfile.yml
+
+  tasks:
+    - name: setting fact
+      set_fact:
+        esxi_password: "{{ esxi_password }}"
+        vcenter_password: "{{ vcenter_password }}"
+        vcenter7_license: "{{ vcenter7_license }}"
+        vsphere7_license: "{{ vsphere7_license }}"
+
+
+- import_playbook: playbooks/01-deploy-vcsa.yml
+- import_playbook: playbooks/02-basic-config-vcsa.yml
+- import_playbook: playbooks/03-add-hosts.yml
+- import_playbook: playbooks/04-storage.yml
+

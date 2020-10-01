@@ -1,0 +1,41 @@
+---
+- hosts: localhost
+  name: Deploy the VCSA to an ESXi Host
+  gather_facts: false
+  vars_files: ../answerfile.yml
+
+  tasks:
+    - vmware_deploy_ovf:
+        hostname: "{{ esxi_ip_address }}"
+        username: "{{ esxi_username }}"
+        password: "{{ esxi_password }}"
+        name: "{{ vcenter_virtual_machine_name }}" # Virtual Machine name in ESXI, not FQDN
+        ovf: "{{ vcsa_ova_file }}"
+        wait_for_ip_address: true
+        validate_certs: no
+        inject_ovf_env: true
+        datastore: "{{ datastore }}"
+        networks: "{u'VM Network':u'{{ esxi_network }}'}"
+        properties:
+          DeploymentOption.value: "{{ vcsa_size }}" # vCenter t-shirt size: tiny,small,medium,large, or infrastructure
+          guestinfo.cis.appliance.net.addr.family: "ipv4" # ipv4 or ipv6
+          guestinfo.cis.appliance.net.mode: "static" # static or dhcp
+          guestinfo.cis.appliance.net.addr: "{{ vcenter_net_ip_address }}"
+          guestinfo.cis.appliance.net.pnid: "{{ vcenter_hostname }}.{{ domain }}" # FQDN of vcenter server
+          guestinfo.cis.appliance.net.prefix: "{{ vcenter_net_prefix }}" # netmask length, CIDR notation, i.e. '24'
+          guestinfo.cis.appliance.net.gateway: "{{ vcenter_net_gateway }}"
+          guestinfo.cis.appliance.net.dns.servers: "{{ vcenter_dns_servers }}" # Comma separated list of IP addresses of DNS servers.
+          guestinfo.cis.appliance.root.passwd: "{{ vcenter_password }}"
+          guestinfo.cis.ceip_enabled: "False"
+          guestinfo.cis.deployment.autoconfig: "True" # Auto-configure after deployment
+          guestinfo.cis.vmdir.domain-name: "{{ domain }}"
+          guestinfo.cis.vmdir.username: "{{ vcenter_username }}"
+          guestinfo.cis.vmdir.password: "{{ vcenter_password }}" # SSO Password for administrator@vsphere.local
+          guestinfo.cis.appliance.ntp.servers: "us.pool.ntp.org"
+          guestinfo.cis.appliance.ssh.enabled: "True"
+          domain: "{{ domain }}"
+          searchpath: "{{ searchpath }}"
+      delegate_to: localhost
+
+    - pause: 
+        minutes: 40

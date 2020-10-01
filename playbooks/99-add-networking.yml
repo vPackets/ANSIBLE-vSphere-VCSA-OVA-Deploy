@@ -1,0 +1,30 @@
+---
+- hosts: localhost
+  name: Networking
+  gather_facts: false
+  vars_files: ../answerfile.yml
+
+  tasks:
+    - name: Create dvSwitch with all options
+      vmware_dvswitch:
+        validate_certs: no
+        hostname: '{{ vcenter_hostname }}.{{ domain }}'
+        username: '{{ vcenter_username }}'
+        password: '{{ vcenter_password }}'
+        datacenter: '{{ datacenter_name }}'
+        switch: dvSwitch-MAIN
+        version: 6.6.0
+        mtu: 9000
+        uplink_quantity: 4
+        uplink_prefix: 'Uplink_'
+        discovery_protocol: cdp
+        discovery_operation: both
+        multicast_filtering_mode: snooping
+        health_check:
+          #vlan_mtu: true
+          #vlan_mtu_interval: 1
+          teaming_failover: true
+          teaming_failover_interval: 1
+        state: present
+      delegate_to: localhost
+
